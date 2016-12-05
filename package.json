@@ -2,7 +2,7 @@
   "name": "metalsmith-demo",
   "version": "1.0.0",
   "description": "",
-  "main": "build.js",
+  "main": "Gulpfile.js",
   "dependencies": {
     "handlebars": "^4.0.6",
     "metalsmith": "^2.3.0",
@@ -21,7 +21,13 @@
     "metalsmith-publish": "^0.1.5",
     "metalsmith-word-count": "^0.0.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-metalsmith": "^1.0.0",
+    "gulp-sass": "^2.3.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
