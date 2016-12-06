@@ -47,10 +47,10 @@ metalsmith(__dirname) // the working directory
 .destination(dir.dest)  // the destination directory
 .use(markdown())        // convert markdown to HTML
 .use(multiLanguage({
-  default: 'es',
+  default: 'de',
   locales: [
-    'en',
-    'es'
+    'de',
+    'en'
   ]}
 ))
 .use(layouts(templateConfig))
