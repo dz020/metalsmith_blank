@@ -28,7 +28,7 @@ var templateConfig = {
 
 var ms = metalsmith(__dirname) // the working directory
 .clean(true)            // clean the build directory
-.source(dir.to_smith_source + 'html/')    // the page source directory
+.source(dir.to_smith_source + 'content/')    // the page source directory
 .destination(dir.dest)  // the destination directory
 .use(markdown())        // convert markdown to HTML
 .use(multiLanguage({ 
@@ -90,7 +90,6 @@ gulp.task('server', function () {
     }
   });
 });
-
 
 gulp.task('watch', function () {
     livereload.listen();

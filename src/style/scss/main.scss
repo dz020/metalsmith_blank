@@ -1,4 +1,21 @@
+@import 'normalize';
+@include normalize();
+
 body{
-    background-color: red;
+    background-color: blue; 
     color: white;
-}
+    header{
+        width: 100%;
+        background-color: orange;
+        border:1px solid black; 
+        height: 300px; 
+    }
+    main{
+        background-color: red;
+        border: 1px solid black;
+    } 
+    footer{ 
+        background-color: green;
+        border: 1px solid black; 
+    }
+} 

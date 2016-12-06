@@ -26,7 +26,9 @@
     "gulp-connect": "^5.0.0",
     "gulp-livereload": "^3.8.1",
     "gulp-metalsmith": "^1.0.0",
-    "gulp-sass": "^2.3.2"
+    "gulp-sass": "^2.3.2",
+    "gulpsmith": "^0.5.5",
+    "normalize-scss": "^6.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
