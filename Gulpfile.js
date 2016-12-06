@@ -15,6 +15,9 @@ var handlebars = require('handlebars');
 var imagemin = require('gulp-imagemin');
 var sourcemaps = require('gulp-sourcemaps');
 var eslint = require('gulp-eslint');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+var rename = require('gulp-rename');
 
 handlebars.registerHelper('if_eq', function (a, b, opts) {
   if (a === b) {
@@ -36,8 +39,8 @@ var dir = {
 
 var templateConfig = {
   engine: 'handlebars',
-  directory: dir.toMetalsmithSource + 'templates/',
-  partials: dir.toMetalsmithSource + 'partials/',
+  directory: dir.toMetalsmithSource + 'html/templates/',
+  partials: dir.toMetalsmithSource + 'html/partials/',
   default: 'page.html'
 };
 
@@ -80,11 +83,11 @@ function debug (logToConsole) {
 
 //-----------------------------------------------------------------
 
-var sourceFiles = function () {
+var contentFiles = function () {
   return gulp.src(dir.toMetalsmithSource + '**/*').pipe( gulpMetalsmith() ).pipe( gulp.dest(dir.dest) ).pipe( livereload() );
 };
 
-var styles = function () {
+var styleFiles = function () {
   return gulp.src(dir.scssSource + '**/*.scss')
     .pipe( sourcemaps.init() )
     .pipe( sass().on('error', sass.logError) )
@@ -93,15 +96,14 @@ var styles = function () {
     .pipe( livereload() );
 };
 
-gulp.task('files-watch', sourceFiles);
-gulp.task('styles-watch', styles);
+gulp.task('watch-content', contentFiles);
+gulp.task('watch-style', styleFiles);
 
 gulp.task('clean-build', function () {
   del([
     dir.dest + 'content',
-    dir.dest + 'partials',
+    dir.dest + 'html',
     dir.dest + 'assets',
-    dir.dest + 'templates'
   ]);
 });
 
@@ -111,6 +113,16 @@ gulp.task('image-min', function () {
 
 gulp.task('eslint', function () {
   gulp.src(dir.jsSource + '*.js').pipe( eslint() ).pipe( eslint.format() );
+});
+
+gulp.task('js-min', function () {
+  return gulp.src(dir.jsSource + '*.js')
+  .pipe( sourcemaps.init())
+  .pipe( concat('concated.js'))
+  .pipe( rename('main.min.js'))
+  .pipe( uglify())
+  .pipe( sourcemaps.write('js_sourcemap'))
+  .pipe( gulp.dest(dir.dest + 'lib'));
 });
 
 gulp.task('server', function () {
@@ -133,7 +145,7 @@ gulp.task('server', function () {
 
 gulp.task('watch', function () {
   livereload.listen();
-  runSequence('files-watch', 'styles-watch', 'clean-build', 'image-min', 'eslint'); //1 2 3
+  runSequence('watch-style', 'watch-content', 'clean-build', 'image-min', 'eslint', 'js-min'); //1 2 3
 });
 
 //-----------------------------------------------------------------
