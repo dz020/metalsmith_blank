@@ -29,6 +29,7 @@
     "gulp-livereload": "^3.8.1",
     "gulp-metalsmith": "^1.0.0",
     "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.9.1",
     "gulpsmith": "^0.5.5",
     "normalize-scss": "^6.0.0",
     "run-sequence": "^1.2.2"

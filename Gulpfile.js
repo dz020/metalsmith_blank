@@ -13,6 +13,7 @@ var runSequence = require('run-sequence');
 var del = require('del');
 var handlebars = require("handlebars");
 var imagemin = require('gulp-imagemin');
+var sourcemaps = require('gulp-sourcemaps');
 
 handlebars.registerHelper('if_eq', function(a, b, opts) {
     if (a === b) {
@@ -81,7 +82,12 @@ var source_files = function() {
 };
 
 var styles = function() {
-    return gulp.src(dir.scss_source + '**/*.scss').pipe( sass() ).pipe( gulp.dest(dir.dest + 'style/css') ).pipe( livereload() );
+    return gulp.src(dir.scss_source + '**/*.scss')
+    .pipe(sourcemaps.init())
+    .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.write('sourcemaps'))
+    .pipe( gulp.dest(dir.dest + 'style/css') )
+    .pipe( livereload());
 };
 
 gulp.task('files-watch', source_files);
