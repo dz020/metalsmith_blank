@@ -9,7 +9,17 @@ var fs = require('fs');
 var livereload = require('gulp-livereload');
 var gulp_metalsmith = require('gulp-metalsmith');
 var sass = require('gulp-sass');
-var uglify = require('gulp-uglify');
+var runSequence = require('run-sequence');
+var del = require('del');
+var handlebars = require("handlebars");
+
+handlebars.registerHelper('if_eq', function(a, b, opts) {
+    if (a === b) {
+        return opts.fn(this);
+    } else {
+        return opts.inverse(this);
+    }
+});
 
 var dir = {
   base: __dirname + '/',
@@ -73,6 +83,14 @@ var styles = function() {
 gulp.task('files-watch', source_files);
 gulp.task('styles-watch', styles);
 
+gulp.task('clean-build', function(){
+    del([
+        dir.dest + 'content',
+        dir.dest + 'partials',
+        dir.dest + 'templates'
+    ]);
+});
+
 //-----------------------------------------------------------------
 
 gulp.task('server', function () {
@@ -93,8 +111,7 @@ gulp.task('server', function () {
 
 gulp.task('watch', function () {
     livereload.listen();
-    gulp.watch( dir.to_smith_source + '**/*', ['files-watch']);
-    gulp.watch( dir.scss_source + '**/*.scss', ['styles-watch']);
+    runSequence('files-watch', 'styles-watch', 'clean-build');
 });
 
 //-----------------------------------------------------------------

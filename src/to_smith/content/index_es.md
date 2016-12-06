@@ -8,6 +8,7 @@ layout: page.html
 priority: 0.9
 date: 2016-04-19
 publish: draft
+language: spanish
 ---
 
 Hallo Welt (spanisch)
