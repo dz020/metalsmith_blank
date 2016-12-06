@@ -25,6 +25,7 @@
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
+    "gulp-imagemin": "^3.1.1",
     "gulp-livereload": "^3.8.1",
     "gulp-metalsmith": "^1.0.0",
     "gulp-sass": "^2.3.2",

@@ -12,6 +12,7 @@ var sass = require('gulp-sass');
 var runSequence = require('run-sequence');
 var del = require('del');
 var handlebars = require("handlebars");
+var imagemin = require('gulp-imagemin');
 
 handlebars.registerHelper('if_eq', function(a, b, opts) {
     if (a === b) {
@@ -26,7 +27,8 @@ var dir = {
   lib: __dirname + '/lib/',
   to_smith_source: './src/to_smith/',
   dest: './build/',
-  scss_source: './src/style/scss/'
+  scss_source: './src/style/scss/',
+  assets_source: './src/assets/'
 };
 
 var templateConfig = {
@@ -72,6 +74,8 @@ function debug(logToConsole) {
   };
 };
 
+//-----------------------------------------------------------------
+
 var source_files = function() {
   return gulp.src(dir.to_smith_source + '**/*').pipe( gulp_metalsmith() ).pipe( gulp.dest(dir.dest) ).pipe( livereload() );
 };
@@ -87,11 +91,14 @@ gulp.task('clean-build', function(){
     del([
         dir.dest + 'content',
         dir.dest + 'partials',
+        dir.dest + 'assets',
         dir.dest + 'templates'
     ]);
 });
 
-//-----------------------------------------------------------------
+gulp.task('image-min', function(){
+    gulp.src(dir.assets_source + 'images/**/*').pipe( imagemin() ).pipe(gulp.dest(dir.dest + "assets/images"));
+});
 
 gulp.task('server', function () {
   connect.server({
@@ -109,9 +116,11 @@ gulp.task('server', function () {
   });
 });
 
+//-----------------------------------------------------------------
+
 gulp.task('watch', function () {
     livereload.listen();
-    runSequence('files-watch', 'styles-watch', 'clean-build');
+    runSequence('files-watch', 'styles-watch', 'clean-build', 'image-min'); //1 2 3
 });
 
 //-----------------------------------------------------------------
