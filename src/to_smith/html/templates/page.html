@@ -1,5 +1,7 @@
 {{> skeleton_open }}
 
+{{> header }}
+
 <main>
   <article>
 
@@ -10,9 +12,9 @@
     {{{ contents }}}
 
   </article>
-  <button>
-    <a href="secondpage.html">{{ next_article }}</a>
-  </button>
+  <a href="secondpage.html">{{ next_article }}</a>
 </main>
+
+{{> footer }}
 
 {{> skeleton_close }}

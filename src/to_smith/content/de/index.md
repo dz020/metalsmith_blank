@@ -10,6 +10,7 @@ date: 2016-04-19
 publish: draft
 next_article: Weiter zum nächsten Artikel
 language: de
+sportart: fussball
 ---
 
 Hallo Welt 
