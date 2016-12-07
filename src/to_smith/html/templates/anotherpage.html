@@ -1,26 +1,18 @@
-<!DOCTYPE html>
-<html lang="{{ language }}">
-  <head>
-    {{> meta }}
-  </head>
-  <body>
+{{> skeleton_open }}
 
-  {{> header }}
+<main>
+  <article>
 
-  <main>
-    <article>
+    {{#if title}}
+      <h1>{{ title }}</h1>
+    {{/if}}
 
-      {{#if title}}
-        <h1>{{ title }}</h1>
-      {{/if}}
+    {{{ contents }}}
 
-      {{{ contents }}}
-
-    </article>
+  </article>
+  <button>
     <a href="index.html">{{ previous_article }}</a>
-  </main>
+  </button>
+</main>
 
-  {{> footer }}
-
-</body>
-</html>
+{{> skeleton_close }}
