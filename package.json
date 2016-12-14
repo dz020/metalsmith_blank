@@ -29,11 +29,11 @@
     "gulp-eslint": "^3.0.1",
     "gulp-imagemin": "^3.1.1",
     "gulp-livereload": "^3.8.1",
-    "gulp-metalsmith": "^1.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^1.9.1",
     "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
     "gulpsmith": "^0.5.5",
     "normalize-scss": "^6.0.0",
     "run-sequence": "^1.2.2"

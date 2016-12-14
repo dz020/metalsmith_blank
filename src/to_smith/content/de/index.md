@@ -11,6 +11,7 @@ publish: draft
 next_article: Weiter zum nächsten Artikel
 language: de
 sportart: fussball
+navmain: 
 ---
 
-Hallo Welt 
+Hallo Welt

@@ -7,7 +7,6 @@ var layouts = require('metalsmith-layouts');
 var gulp = require('gulp');
 var connect = require('gulp-connect');
 var livereload = require('gulp-livereload');
-var gulpMetalsmith = require('gulp-metalsmith');
 var sass = require('gulp-sass');
 var runSequence = require('run-sequence');
 var del = require('del');
@@ -18,6 +17,7 @@ var eslint = require('gulp-eslint');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
+var gutil = require('gulp-util');
 
 handlebars.registerHelper('if_eq', function (a, b, opts) {
   if (a === b) {
@@ -29,9 +29,9 @@ handlebars.registerHelper('if_eq', function (a, b, opts) {
 
 var dir = {
   base: __dirname + '/',
-  lib: __dirname + '/lib/',
   toMetalsmithSource: './src/to_smith/',
   dest: './build/',
+  src: './src/',
   scssSource: './src/style/scss/',
   assetsSource: './src/assets/',
   jsSource: './src/lib/'
@@ -45,7 +45,7 @@ var templateConfig = {
 };
 
 metalsmith(__dirname) // the working directory
-.clean(true)            // clean the build directory
+.clean(false)            // clean the build directory
 .source(dir.toMetalsmithSource + 'content/')    // the page source directory
 .destination(dir.dest)  // the destination directory
 .use(markdown())        // convert markdown to HTML
@@ -64,16 +64,15 @@ metalsmith(__dirname) // the working directory
   }
 });
 
-
-function debug (logToConsole) {
+function debug (logTogutil) {
   return function (files, metalsmith, done) {
-    if (logToConsole) {
-      console.log('\nMETADATA:');
-      console.log(metalsmith.metadata());
+    if (logTogutil) {
+      gutil.log('\nMETADATA:');
+      gutil.log(metalsmith.metadata());
 
       for (var f in files) {
-        console.log('\nFILE:');
-        console.log(files[f]);
+        gutil.log('\nFILE:');
+        gutil.log(files[f]);
       }
     }
 
@@ -83,46 +82,69 @@ function debug (logToConsole) {
 
 //-----------------------------------------------------------------
 
-var contentFiles = function () {
-  return gulp.src(dir.toMetalsmithSource + '**/*').pipe( gulpMetalsmith() ).pipe( gulp.dest(dir.dest) ).pipe( livereload() );
-};
+gulp.task('build-content', function () {
+  metalsmith(__dirname) // the working directory
+    .clean(false)            // clean the build directory
+    .source(dir.toMetalsmithSource + 'content/')    // the page source directory
+    .destination(dir.dest)  // the destination directory
+    .use(markdown())        // convert markdown to HTML
+    .use(multiLanguage({
+      default: 'de',
+      locales: [
+        'de',
+        'en'
+      ]}
+    ))
+    .use(layouts(templateConfig))
+    .use(debug(false))
+    .build( function (err) {  // build the site
+      if (err) {
+        throw err;   // and throw errors
+      }
+    });
+});
 
-var styleFiles = function () {
-  return gulp.src(dir.scssSource + '**/*.scss')
-    .pipe( sourcemaps.init() )
-    .pipe( sass().on('error', sass.logError) )
-    .pipe( sourcemaps.write('sourcemaps') )
-    .pipe( gulp.dest(dir.dest + 'style/css') )
-    .pipe( livereload() );
-};
+function buildStyle () {
+  gulp.src(dir.scssSource + '**/*.scss')
+  .pipe( sourcemaps.init() )
+  .pipe( sass().on('error', sass.logError) )
+  .pipe( sourcemaps.write('sourcemaps') )
+  .pipe( gulp.dest(dir.dest + 'style/css') )
+  .pipe( livereload() );
+}
 
-gulp.task('watch-content', contentFiles);
-gulp.task('watch-style', styleFiles);
+gulp.task('build-style', function () {
+  gutil.log('build style aufgerufen');
+  buildStyle();
+});
 
-gulp.task('clean-build', function () {
+gulp.task('build-clean', function () {
+  gutil.log('build clean aufgerufen');
   del([
-    dir.dest + 'content',
-    dir.dest + 'html',
-    dir.dest + 'assets',
+    dir.dest
   ]);
 });
 
 gulp.task('image-min', function () {
+  gutil.log('imagemin aufgerufen');
   gulp.src(dir.assetsSource + 'images/**/*').pipe( imagemin() ).pipe(gulp.dest(dir.dest + 'assets/images'));
 });
 
 gulp.task('eslint', function () {
+  gutil.log('eslint aufgerufen');
   gulp.src(dir.jsSource + '*.js').pipe( eslint() ).pipe( eslint.format() );
 });
 
-gulp.task('js-min', function () {
-  return gulp.src(dir.jsSource + '*.js')
+gulp.task('build-js', function () {
+  gutil.log('build js aufgerufen');
+  gulp.src(dir.jsSource + '**/*.js')
   .pipe( sourcemaps.init())
   .pipe( concat('concated.js'))
   .pipe( rename('main.min.js'))
   .pipe( uglify())
   .pipe( sourcemaps.write('js_sourcemap'))
-  .pipe( gulp.dest(dir.dest + 'lib'));
+  .pipe( gulp.dest(dir.dest + 'lib'))
+  .pipe( livereload() );
 });
 
 gulp.task('server', function () {
@@ -141,13 +163,23 @@ gulp.task('server', function () {
   });
 });
 
-//-----------------------------------------------------------------
-
-gulp.task('watch', function () {
-  livereload.listen();
-  runSequence('watch-style', 'watch-content', 'clean-build', 'image-min', 'eslint', 'js-min'); //1 2 3
+gulp.task('live-reload', function () {
+  livereload();
 });
 
 //-----------------------------------------------------------------
 
+
+gulp.task('watch', function () {
+  livereload.listen();
+
+  gulp.watch([dir.src + '**/*'], function () {
+    runSequence('build-clean', 'build-style', 'build-content', 'image-min', 'eslint', 'build-js'); //1 2 3
+  });
+
+});
+
+//-----------------------------------------------------------------
+
+runSequence('build-clean', 'build-style', 'build-content', 'image-min', 'eslint', 'build-js'); //1 2 3
 gulp.task('default', ['watch', 'server']);
